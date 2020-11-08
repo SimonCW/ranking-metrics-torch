@@ -1,5 +1,6 @@
 import pytest
 import torch
+import numpy as np
 
 import hypothesis
 from hypothesis import strategies as strat
@@ -53,6 +54,8 @@ def test_dcg_matches_sklearn(scores_at_ks):
         ]
 
         assert dcgs_at_k[i].tolist() == pytest.approx(sklearn_dcgs_at_k)
+
+    assert 1 == 0
 
 
 def test_ndcg_has_correct_shape(
@@ -110,3 +113,32 @@ def test_ndcg_matches_sklearn(scores_at_ks):
         ]
 
         assert ndcgs_at_k[i].tolist() == pytest.approx(sklearn_dcgs_at_k)
+
+
+def test_dcg_of_1darray_matches_sklearn():
+    true1d = np.array([[2, 5, 3, 1]])
+    scores1d = np.array([[0.3, 1.0, 0.7, 0.4]])
+    k = 3
+
+    sk_result = dcg_score(y_true=true1d, y_score=scores1d, k=3)
+    rm_result = dcg_at(
+        ks=torch.tensor([k]),
+        labels=torch.from_numpy(true1d),
+        scores=torch.from_numpy(scores1d),
+    )
+    assert rm_result.numpy().mean() == pytest.approx(sk_result)
+
+
+def test_ndcg_of_1darray_matches_sklearn():
+    true1d = np.array([[2, 5, 3, 1]])
+    scores1d = np.array([[0.3, 1.0, 0.7, 0.4]])
+    k = 3
+
+    sk_result = ndcg_score(y_true=true1d, y_score=scores1d, k=3)
+    rm_result = ndcg_at(
+        ks=torch.tensor([k]),
+        labels=torch.from_numpy(true1d),
+        scores=torch.from_numpy(scores1d),
+    )
+    assert rm_result.numpy().mean() == pytest.approx(sk_result)
+
