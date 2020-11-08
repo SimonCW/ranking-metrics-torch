@@ -55,8 +55,6 @@ def test_dcg_matches_sklearn(scores_at_ks):
 
         assert dcgs_at_k[i].tolist() == pytest.approx(sklearn_dcgs_at_k)
 
-    assert 1 == 0
-
 
 def test_ndcg_has_correct_shape(
     batch_size: int, cutoffs: torch.Tensor, scores: torch.Tensor, labels: torch.Tensor
